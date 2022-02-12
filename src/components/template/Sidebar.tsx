@@ -1,10 +1,15 @@
-import {HomeIcon, SettingsIcon, BellIcon} from '../icons/index'
+import {HomeIcon, SettingsIcon, BellIcon, LogoutIcon} from '../icons/index'
 import SidebarItems from './SidebarItems'
 import Logo from './Logo'
 
 export default function Sidebar(){
     return (
-        <aside>
+        <aside className={`
+            flex flex-col
+            bg-gray-200 text-gray-700
+            dark:bg-gray-900 
+            dark:text-gray-200
+            `}>
             <div className={`
                 flex flex-col items-center justify-center
                 bg-gradient-to-r from-indigo-500 to-purple-800
@@ -12,10 +17,21 @@ export default function Sidebar(){
             `}>
                 <Logo />
             </div>
-            <ul>
+            <ul className={`flex-grow`}>
                 <SidebarItems url='/' text='Início' icon={HomeIcon}></SidebarItems>
                 <SidebarItems url='/settings' text='Ajustes' icon={SettingsIcon}></SidebarItems>
                 <SidebarItems url='/notifications' text='Notificações' icon={BellIcon}></SidebarItems>
+            </ul>
+            <ul>
+                <SidebarItems 
+                    text='Sair' 
+                    icon={LogoutIcon} 
+                    onClick={() => console.log('Logout')}
+                    className={`
+                        text-red-600 dark:text-red-400 
+                        dark:hover:text-white
+                        hover:bg-red-500 hover:text-white`}
+                ></SidebarItems>
             </ul>
         </aside>
     )

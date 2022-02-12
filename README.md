@@ -10,6 +10,6 @@
 - TypeScript
 - Tailwind CSS
 
-## Tela principal
+## 🎞️ Tela principal
 
 ![alt text](./public/prints/image_print.png)
