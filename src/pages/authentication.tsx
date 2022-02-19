@@ -32,7 +32,7 @@ export default function Authentication() {
         `}>
             <div className="hidden md:block md:w-1/2">
                 <img 
-                    src="https://source.unsplash.com/random" 
+                    src="https://cdn.pixabay.com/photo/2016/02/16/16/57/login-1203603_960_720.png" 
                     alt="Imagem da Tela de autenticação" 
                     className="h-screen w-full object-cover"
                 />
