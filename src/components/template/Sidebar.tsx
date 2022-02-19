@@ -1,8 +1,10 @@
 import {HomeIcon, SettingsIcon, BellIcon, LogoutIcon} from '../icons/index'
 import SidebarItems from './SidebarItems'
 import Logo from './Logo'
+import useAuth from '../../data/hook/useAuth'
 
 export default function Sidebar(){
+    const {logout} = useAuth()
     return (
         <aside className={`
             flex flex-col
@@ -26,7 +28,7 @@ export default function Sidebar(){
                 <SidebarItems 
                     text='Sair' 
                     icon={LogoutIcon} 
-                    onClick={() => console.log('Logout')}
+                    onClick={logout}
                     className={`
                         text-red-600 dark:text-red-400 
                         dark:hover:text-white

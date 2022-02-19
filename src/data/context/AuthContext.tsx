@@ -1,12 +1,16 @@
 import { createContext, useEffect, useState } from "react";
 import User from "../../model/User";
-import route from 'next/router'
+import router from 'next/router'
 import firebase from "../../firebase/config";
-import Cookies from 'js-cookie'
+import cookies from 'js-cookie'
 
 interface AuthContextProps {
     user?: User
+    loading?: boolean
+    login?: (email: string, password: string) => Promise<void>
+    register?: (email: string, password: string) => Promise<void>
     loginWithGoogle?: () => Promise<void>
+    logout?: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextProps>({})
@@ -25,11 +29,11 @@ async function normalizeUser(userFirebase: firebase.User): Promise<User> {
 
 function manageCookie(logged: boolean) {
     if(logged) {
-        Cookies.set('user-auth', logged, {
+        cookies.set('user-auth', logged, {
             expires: 7
         })
     } else {
-        Cookies.remove('user-auth')
+        cookies.remove('user-auth')
     }
 }
 
@@ -53,21 +57,69 @@ export function AuthPovider(props) {
     }
 
     async function loginWithGoogle() {
-        const resp = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        try {
+            setLoading(true)
+            const resp = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            await setUpSession(resp.user)
+            router.push('/')
+        } finally {
+            setLoading(false)
+        }
+    }
 
-        await setUpSession(resp.user)
-        route.push('/')
+    async function login(email: string, password: string) {
+        try {
+            setLoading(true)
+            const resp = await firebase.auth().signInWithEmailAndPassword(email, password)
+            await setUpSession(resp.user)
+            router.push('/')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    async function register(email: string, password: string) {
+        try {
+            setLoading(true)
+            const resp = await firebase.auth().createUserWithEmailAndPassword(email, password)
+            await setUpSession(resp.user)
+            router.push('/')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    async function logout() {
+        try {
+            setLoading(true)
+            await firebase.auth().signOut()
+            await setUpSession(null)
+            router.push('/authentication')
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
-        const cancelObserver = firebase.auth().onIdTokenChanged(setUpSession)
-        return () => cancelObserver()
+
+        const isCookies = cookies.get('user-auth')
+
+        if(!user && !isCookies) router.push('/authentication')
+
+        if(isCookies) {
+            const cancelObserver = firebase.auth().onIdTokenChanged(setUpSession)
+            return () => cancelObserver()
+        }
     }, [])
 
     return (
         <AuthContext.Provider value={{
             user,
-            loginWithGoogle
+            loading,
+            loginWithGoogle,
+            logout,
+            login,
+            register
         }}>
             {props.children}
         </AuthContext.Provider>
